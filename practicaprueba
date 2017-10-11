@@ -1,0 +1,435 @@
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.Scanner;
+
+public class practicaprueba1 {
+	public static int muestraContenido(String fichero, int numlineas) throws FileNotFoundException, IOException{
+		String cadena;
+		FileReader f =new FileReader(fichero);
+		BufferedReader b = new BufferedReader(f);
+		while((cadena=b.readLine())!=null) {
+			System.out.println(cadena);
+			numlineas ++;
+		}
+		b.close();
+		return numlineas;
+	}
+	public static void copiaContenido(String fichero, int numlineas,long tiempo_inicio)throws FileNotFoundException, IOException{
+		System.out.println("    ");//separar una matriz de otra
+		String cadena;
+		int n; //filas
+		int m; //columnas
+		int letra=0;//para ir mostrando cada caracter
+		int linea=0; //contador para enseñar la linea
+		String datos [] = new String[numlineas]; //creo un vector de tamaño de las líneas en el que voy guardando la informacion que hay en cada linea
+		int contador=0;
+		FileReader f =new FileReader(fichero);
+		BufferedReader b = new BufferedReader(f);
+		while(((cadena=b.readLine())!=null)&&(contador<numlineas)) {
+			datos[contador]=cadena;
+			contador++;
+		}
+		b.close();
+		//Aqui empezamos a copiar la matriz
+		n=Integer.parseInt(datos[0]);//paso el string a un int
+		m=Integer.parseInt(datos[1]);
+		char matriz [][] =new char [n][m];
+		for(int i=0; i<n;i++) {
+			for(int j=0; j<m;j++) {
+				String c=datos[linea+2];//mas dos porque las dos primeras lineas son de filas y columnas utilizo caracter porque va a ser el mismo contador
+			
+				matriz[i][j]=c.charAt(letra);//caracter porque va a tener los mismos caracteres que columnas
+				System.out.print(matriz[i][j]);
+				letra++;
+			}
+			letra=0;//vuelvo a reiniciar el contador porque sino se pasa de rango
+			linea++;//aumento el contador de linea aqui porque tiene que cargar una linea por cada columna
+			System.out.println("");
+		}
+		empiezaJuego(matriz,n,m,tiempo_inicio);
+	}
+	public static void empiezaJuego(char [][] matriz, int x, int y, long tiempo_inicio) {
+		long tiempo_fin;
+		Scanner in =new Scanner(System.in);
+		int contador=0;
+		System.out.print("Numero de iteraciones que desea: ");
+		int iteracion=in.nextInt();
+		int viva=0;
+		int muerta=0;
+		//si una celula muerta rodeada por tres vivas vive
+		//si una celula viva no esta rodeada por dos o tres celulas vivas muere
+		/*
+		 * vamos a crear una matriz copia para cada paso guardarlo en una nueva matriz
+		 * 
+		 */
+		while(contador!=iteracion) {
+			matriz=ampliaMatriz(matriz, x, y);
+			x=matriz.length;//conseguir el numero de filas que ha aumentado
+			y=matriz[0].length;//conseguir el numero de columnas que ha aumentado
+			char [][] matrizcopia=new char[x][y];			
+			for(int i=0; i<x;i++) {
+				for(int j=0;j<y;j++) {
+					matrizcopia[i][j]=matriz[i][j];
+				}
+			}
+			for(int i=0;i<x;i++) {
+				for(int j=0;j<y;j++) {
+					if((i!=0)&&(j!=0)&&(i!=(x-1))&&(j!=(y-1))) {
+						if(matriz[i][j]=='.') {
+							if(matriz[i-1][j]=='X') {
+								viva++;
+							}
+							if(matriz[i+1][j]=='X') {
+								viva++;
+							}
+							if(matriz[i][j-1]=='X') {
+								viva++;
+							}
+							if(matriz[i][j+1]=='X') {
+								viva++;
+							}
+							if(matriz[i-1][j-1]=='X') {
+								viva++;
+							}
+							if(matriz[i+1][j-1]=='X') {
+								viva++;
+							}
+							if(matriz[i-1][j+1]=='X') {
+								viva++;
+							}
+							if(matriz[i+1][j+1]=='X') {
+								viva++;
+							}
+						}
+						if(matriz[i][j]=='X') {
+							if(matriz[i-1][j]=='X') {
+								muerta++;
+							}
+							if(matriz[i+1][j]=='X') {
+								muerta++;
+							}
+							if(matriz[i][j-1]=='X') {
+								muerta++;
+							}
+							if(matriz[i][j+1]=='X') {
+								muerta++;
+							}
+							if(matriz[i-1][j-1]=='X') {
+								muerta++;
+							}
+							if(matriz[i+1][j-1]=='X') {
+								muerta++;
+							}
+							if(matriz[i-1][j+1]=='X') {
+								muerta++;
+							}
+							if(matriz[i+1][j+1]=='X') {
+								muerta++;
+							}
+						}					
+					}
+					if(i==0) {
+						if(j==0) {
+							if(matriz[i][j]=='.') {
+								if(matriz[i+1][j]=='X') {
+									viva++;
+								}
+								if(matriz[i][j+1]=='X') {
+									viva++;
+								}
+								if(matriz[i+1][j+1]=='X') {
+									viva++;
+								}
+							}						
+						}
+						if(j==(y-1)) {
+							if(matriz[i][j]=='.') {
+								if(matriz[i+1][j]=='X') {
+									viva++;
+								}
+								if(matriz[i][j-1]=='X') {
+									viva++;
+								}
+								if(matriz[i+1][j-1]=='X') {
+									viva++;
+								}
+							}							
+						}
+						if((j!=0)&&(j!=(y-1))) {
+							if(matriz[i][j]=='.') {
+								if(matriz[i+1][j]=='X') {
+									viva++;
+								}
+								if(matriz[i][j-1]=='X') {
+									viva++;
+								}
+								if(matriz[i][j+1]=='X') {
+									viva++;
+								}
+
+								if(matriz[i+1][j-1]=='X') {
+									viva++;
+								}
+								if(matriz[i+1][j+1]=='X') {
+									viva++;
+								}
+							}							
+						}						
+					}					
+					if(i==x-1) {
+						if(j==0) {
+							if(matriz[i][j]=='.') {
+								if(matriz[i-1][j]=='X') {
+									viva++;
+								}
+								if(matriz[i][j+1]=='X') {
+									viva++;
+								}
+								if(matriz[i-1][j+1]=='X') {
+									viva++;
+								}
+							}							
+						}
+						if(j==(y-1)) {
+							if(matriz[i][j]=='.') {
+								if(matriz[i-1][j]=='X') {
+								viva++;
+								}
+								if(matriz[i][j-1]=='X') {
+									viva++;
+								}
+								if(matriz[i-1][j-1]=='X') {
+									viva++;
+								}
+							}							
+						}
+						if((j!=0)&&(j!=y-1)) {
+							if(matriz[i][j]=='.') {
+								if(matriz[i-1][j]=='X') {
+									viva++;
+								}
+								if(matriz[i][j-1]=='X') {
+									viva++;
+								}
+								if(matriz[i][j+1]=='X') {
+									viva++;
+								}
+								if(matriz[i-1][j-1]=='X') {
+									viva++;
+								}
+								if(matriz[i-1][j+1]=='X') {
+									viva++;
+								}
+							}							
+						}
+					}
+					if(j==0) {
+						if(i!=0&&i!=x-1) {
+							if(matriz[i][j]=='.') {
+								if(matriz[i-1][j]=='X') {
+									viva++;
+								}
+								if(matriz[i+1][j]=='X') {
+									viva++;
+								}
+								if(matriz[i][j+1]=='X') {
+									viva++;
+								}
+								if(matriz[i-1][j+1]=='X') {
+									viva++;
+								}
+								if(matriz[i+1][j+1]=='X') {
+									viva++;
+								}
+							}							
+						}
+					}
+					if(j==y-1) {
+						if(i!=0&&i!=x-1) {
+							if(matriz[i][j]=='.') {
+								if(matriz[i-1][j]=='X') {
+								viva++;
+								}
+								if(matriz[i+1][j]=='X') {
+									viva++;
+								}
+								if(matriz[i][j-1]=='X') {
+									viva++;
+								}
+								if(matriz[i-1][j-1]=='X') {
+									viva++;
+								}
+								if(matriz[i+1][j-1]=='X') {
+									viva++;
+								}
+							}							
+						}
+					}					
+					if(viva==3) {
+						matrizcopia[i][j]='X';						
+					}
+					else{	
+						if(muerta<2||muerta>3) {
+							matrizcopia[i][j]='.';
+						}
+					}										
+					viva=0;
+					muerta=0;
+				}
+			}
+
+			System.out.println("");
+			for(int n=0; n<x;n++) {
+				for(int m=0;m<y;m++) {
+					matriz[n][m]=matrizcopia[n][m];
+				}
+			}
+			for(int a=0;a<x;a++) {
+				for(int b=0;b<y;b++) {
+					System.out.print(matriz[a][b]);
+				}
+				System.out.println(" ");
+			}
+			System.out.println(" ");
+			contador++;
+		}
+		reducirMatriz(matriz,x,y);
+		int celulas_vivas=0;
+		celulas_vivas=celulasVivas(matriz,x,y);
+		System.out.println("Hay " + celulas_vivas + " celulas vivas");
+		tiempo_fin=System.currentTimeMillis();
+		double tiempo_ejecucion=tiempo_fin-tiempo_inicio;
+		System.out.println("Ha tardado " + tiempo_ejecucion/1000 + " segundos");
+		}
+	public static int celulasVivas(char [][] matriz, int x, int y) {
+		int contador=0;
+		for(int i=0;i<x;i++) {
+			for(int j=0;j<y;j++) {
+				if(matriz[i][j]=='X') {
+					contador++;
+				}
+			}
+			}
+		return contador;
+	}
+	public static void reducirMatriz(char [][] matriz, int x, int y) {
+		char matrizcopia[][]=new char[x-1][y-1];
+		int reducir=1;
+		for(int i=0;i<x-1;i++) {
+			for(int j=0;j<y-1;j++) {
+				matrizcopia[i][j]='.';
+			}
+			}
+		while(reducir==1) {
+			reducir=1;
+			for(int i=0;i<x;i++) {
+				for(int j=0;j<y;j++) {
+					if((i==0)&&((j!=0)&&(j!=y-1))) {
+						if(matriz[i][j]=='X') {
+							reducir=0;
+						}
+						if((j==0)&&((i!=0)&&(i!=x-1))) {
+							if(matriz[i][j]=='X') {
+								reducir=0;
+							}
+						}
+					}
+				}
+			}
+			if(reducir==1) {
+				for(int i=0;i<x-1;i++) {
+					for(int j=0;j<y-1;j++) {
+						matrizcopia[i][j]=matriz[i+1][j+1];
+					}
+				}	
+			x=x-1;
+			y=y-1;
+			}
+		}
+			for(int i=0;i<x;i++) {
+				for(int j=0;j<y;j++) {
+					System.out.print(matrizcopia[i][j]);
+				}
+				System.out.println();
+			}	
+	}
+	public static char [][] ampliaMatriz(char [][] matriz, int x, int y) {
+		int aumenta=0;
+		char [][] nuevamatriz=new char[x][y];
+		for(int i=0;i<x;i++) {
+			for(int j=0;j<y;j++) {
+				if(i==0) {
+					if(matriz[i][j]=='X') {
+						aumenta=1;
+					}
+				}
+				if(i==x-1) {
+					if(matriz[i][j]=='X') {
+						aumenta=1;
+					}
+				}
+				if(j==0) {
+					if(matriz[i][j]=='X') {
+						aumenta=1;
+					}
+				}
+				if(j==y-1) {
+					if(matriz[i][j]=='X') {
+						aumenta=1;
+					}
+				}
+			}
+		}
+		
+		if(aumenta==1) {
+			char [][] nuevamatriz1=new char[x+2][y+2];
+			//primero creo una matriz llena de puntos
+			for(int i=0;i<(x+2);i++) {
+				for(int j=0;j<(y+2);j++) {
+					nuevamatriz1[i][j]='.';
+				}
+			}
+			//ahora voy a guardar en medio de la matriz la otra y que esta quede rodeada de puntos
+			for(int i=0;i<x;i++) {
+				for(int j=0;j<y;j++) {
+					nuevamatriz1[i+1][j+1]=matriz[i][j];
+				}
+			}
+			
+			matriz=nuevamatriz1;
+			x=x+2;
+			y=y+2;
+		}
+		if(aumenta!=1) {
+			nuevamatriz=matriz;
+		}
+		return matriz;
+	}
+	public static void main(String[] args) throws IOException {
+		// TODO Auto-generated method stub
+		long tiempo_inicio=System.currentTimeMillis();
+		int numlineas=0;
+		int contador=0;
+		Scanner in = new Scanner(System.in);
+		System.out.println("Introduce el nombre del fichero ");
+		String fichero=in.nextLine();
+		while(contador==0) {
+		if(fichero.equals("exploder.txt")||fichero.equals("gosper.txt")) {
+			contador=1;
+		}else {
+			contador=0;
+			System.out.println("Las posibilidades son: ");
+			System.out.println();
+			System.out.println("exploder.txt");
+			System.out.println("gosper.txt");
+			System.out.println();
+			System.out.println("Introduce el nombre del fichero ");
+			fichero=in.nextLine();
+		}
+		}
+		numlineas=muestraContenido("C:\\Users\\guille\\eclipse-workspace\\EDA\\src\\"+fichero, numlineas);
+		copiaContenido("C:\\Users\\guille\\eclipse-workspace\\EDA\\src\\"+fichero, numlineas,tiempo_inicio);		
+	}
+}
