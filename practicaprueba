@@ -1,6 +1,9 @@
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Scanner;
 
@@ -16,8 +19,8 @@ public class practicaprueba1 {
 		b.close();
 		return numlineas;
 	}
-	public static void copiaContenido(String fichero, int numlineas,long tiempo_inicio)throws FileNotFoundException, IOException{
-		System.out.println("    ");//separar una matriz de otra
+	public static void copiaContenido(String fichero, int numlineas)throws FileNotFoundException, IOException{
+		System.out.println();//separar una matriz de otra
 		String cadena;
 		int n; //filas
 		int m; //columnas
@@ -39,7 +42,6 @@ public class practicaprueba1 {
 		for(int i=0; i<n;i++) {
 			for(int j=0; j<m;j++) {
 				String c=datos[linea+2];//mas dos porque las dos primeras lineas son de filas y columnas utilizo caracter porque va a ser el mismo contador
-			
 				matriz[i][j]=c.charAt(letra);//caracter porque va a tener los mismos caracteres que columnas
 				System.out.print(matriz[i][j]);
 				letra++;
@@ -48,14 +50,49 @@ public class practicaprueba1 {
 			linea++;//aumento el contador de linea aqui porque tiene que cargar una linea por cada columna
 			System.out.println("");
 		}
-		empiezaJuego(matriz,n,m,tiempo_inicio);
+		empiezaJuego(matriz,n,m);
 	}
-	public static void empiezaJuego(char [][] matriz, int x, int y, long tiempo_inicio) {
-		long tiempo_fin;
+	public static void crearFichero(char [][]matriz,int fila,int columna,String fichero_salida) throws IOException{
+		File archivo=new File(fichero_salida); 
+		BufferedWriter bw;
+		if(archivo.exists()) {
+			bw=new BufferedWriter(new FileWriter(archivo));
+			bw.write(fila + "\n");
+			bw.newLine();
+			bw.write(columna + "\n");
+			bw.newLine();
+			for(int i=0;i<fila;i++) {
+				for(int j=0;j<columna-1;j++) {
+				bw.write(matriz[i][j]);
+				}
+				bw.newLine();
+				}
+		}else {
+			bw=new BufferedWriter(new FileWriter(archivo));
+			bw.write(fila + "\n");
+			bw.newLine();
+			bw.write(columna + "\n");
+			bw.newLine();
+			for(int i=0;i<fila;i++) {
+				for(int j=0;j<columna;j++) {
+				bw.write(matriz[i][j]);
+				}
+				bw.newLine();
+				}
+		}
+		bw.close();
+	}
+	public static void empiezaJuego(char [][] matriz, int x, int y) throws IOException {
 		Scanner in =new Scanner(System.in);
 		int contador=0;
 		System.out.print("Numero de iteraciones que desea: ");
 		int iteracion=in.nextInt();
+		System.out.println();
+		Scanner f=new Scanner(System.in);
+		System.out.println("Introduce el nombre del fichero de salida: ");
+		String fichero_salida=f.nextLine();
+		System.out.println();
+		long tiempo_inicio=System.currentTimeMillis();
 		int viva=0;
 		int muerta=0;
 		//si una celula muerta rodeada por tres vivas vive
@@ -279,29 +316,14 @@ public class practicaprueba1 {
 					muerta=0;
 				}
 			}
-
-			System.out.println("");
 			for(int n=0; n<x;n++) {
 				for(int m=0;m<y;m++) {
 					matriz[n][m]=matrizcopia[n][m];
 				}
 			}
-			for(int a=0;a<x;a++) {
-				for(int b=0;b<y;b++) {
-					System.out.print(matriz[a][b]);
-				}
-				System.out.println(" ");
-			}
-			System.out.println(" ");
 			contador++;
 		}
-		reducirMatriz(matriz,x,y);
-		int celulas_vivas=0;
-		celulas_vivas=celulasVivas(matriz,x,y);
-		System.out.println("Hay " + celulas_vivas + " celulas vivas");
-		tiempo_fin=System.currentTimeMillis();
-		double tiempo_ejecucion=tiempo_fin-tiempo_inicio;
-		System.out.println("Ha tardado " + tiempo_ejecucion/1000 + " segundos");
+		matrizFinal(matriz,x,y,iteracion,tiempo_inicio,fichero_salida);
 		}
 	public static int celulasVivas(char [][] matriz, int x, int y) {
 		int contador=0;
@@ -311,49 +333,99 @@ public class practicaprueba1 {
 					contador++;
 				}
 			}
-			}
+		}
 		return contador;
 	}
-	public static void reducirMatriz(char [][] matriz, int x, int y) {
-		char matrizcopia[][]=new char[x-1][y-1];
-		int reducir=1;
-		for(int i=0;i<x-1;i++) {
-			for(int j=0;j<y-1;j++) {
+	public static void matrizFinal(char [][] matriz, int x, int y, int iteracion, long tiempo_inicio,String fichero_salida) throws IOException {
+		char matrizcopia[][]=new char[x][y];
+		int reducir_fila=1;
+		int reducir_columna=1;
+		int contador_fila=0;
+		int contador_columna=0;
+		for(int i=0;i<x;i++) {
+			for(int j=0;j<y;j++) {
 				matrizcopia[i][j]='.';
 			}
 			}
-		while(reducir==1) {
-			reducir=1;
+		while(reducir_fila==1||reducir_columna==1) {
 			for(int i=0;i<x;i++) {
 				for(int j=0;j<y;j++) {
 					if((i==0)&&((j!=0)&&(j!=y-1))) {
 						if(matriz[i][j]=='X') {
-							reducir=0;
+							reducir_fila=0;
 						}
-						if((j==0)&&((i!=0)&&(i!=x-1))) {
-							if(matriz[i][j]=='X') {
-								reducir=0;
-							}
+						}
+					if((j==0)&&((i!=0)&&(i!=x-1))) {
+						if(matriz[i][j]=='X') {
+							reducir_columna=0;
 						}
 					}
+					}
 				}
-			}
-			if(reducir==1) {
+			
+			if(reducir_fila==1) {
 				for(int i=0;i<x-1;i++) {
-					for(int j=0;j<y-1;j++) {
-						matrizcopia[i][j]=matriz[i+1][j+1];
+					for(int j=0;j<y;j++) {
+						matrizcopia[i][j]=matriz[i+1][j];
 					}
 				}	
-			x=x-1;
-			y=y-1;
 			}
-		}
 			for(int i=0;i<x;i++) {
 				for(int j=0;j<y;j++) {
-					System.out.print(matrizcopia[i][j]);
+					matriz[i][j]=matrizcopia[i][j];
+				}
+			}
+			if(reducir_columna==1) {
+				for(int i=0;i<x;i++) {
+					for(int j=0;j<y-1;j++) {
+						matrizcopia[i][j]=matriz[i][j+1];
+					}
+				}	
+			}
+			for(int i=0;i<x;i++) {
+				for(int j=0;j<y;j++) {
+					matriz[i][j]=matrizcopia[i][j];
+				}
+			}
+		}
+			for(int i=x-1;i>0;i--) {
+				for(int j=0;j<y;j++) {
+					if(matriz[i][j]=='X') {
+						i=0;
+						j=y;
+					}
+				
+				}
+				contador_fila++;
+			}
+			for(int j=y-1;j>0;j--) {
+				for(int i=0;i<x;i++) {
+					if(matriz[i][j]=='X') {
+						i=x;
+						j=0;
+					}
+				}
+				contador_columna++;
+			}
+			for(int i=0;i<x-(contador_fila-1);i++) {
+				for(int j=0;j<y-(contador_columna-1);j++) {
+					System.out.print(matriz[i][j]);
 				}
 				System.out.println();
-			}	
+			}
+			int fila=matriz.length-(contador_fila-1);
+			int columna=matriz[0].length-(contador_columna-1);
+			System.out.println("Numero de iteraciones: " + iteracion);
+			int celulas_vivas=0;
+			celulas_vivas=celulasVivas(matriz,x,y);
+			System.out.println("Hay " + celulas_vivas + " celulas vivas");
+			System.out.println("Dimensiones: " + fila + "X" + columna);
+			crearFichero(matriz,fila,columna,fichero_salida);
+			long tiempo_fin=System.currentTimeMillis();
+			double tiempo_ejecucion=tiempo_fin-tiempo_inicio;
+			System.out.println("Ha tardado " + tiempo_ejecucion/1000 + " segundos");
+			System.out.println("Fichero de salida: " + fichero_salida);
+		
 	}
 	public static char [][] ampliaMatriz(char [][] matriz, int x, int y) {
 		int aumenta=0;
@@ -382,7 +454,6 @@ public class practicaprueba1 {
 				}
 			}
 		}
-		
 		if(aumenta==1) {
 			char [][] nuevamatriz1=new char[x+2][y+2];
 			//primero creo una matriz llena de puntos
@@ -397,7 +468,6 @@ public class practicaprueba1 {
 					nuevamatriz1[i+1][j+1]=matriz[i][j];
 				}
 			}
-			
 			matriz=nuevamatriz1;
 			x=x+2;
 			y=y+2;
@@ -409,7 +479,6 @@ public class practicaprueba1 {
 	}
 	public static void main(String[] args) throws IOException {
 		// TODO Auto-generated method stub
-		long tiempo_inicio=System.currentTimeMillis();
 		int numlineas=0;
 		int contador=0;
 		Scanner in = new Scanner(System.in);
@@ -429,7 +498,7 @@ public class practicaprueba1 {
 			fichero=in.nextLine();
 		}
 		}
-		numlineas=muestraContenido("C:\\Users\\guille\\eclipse-workspace\\EDA\\src\\"+fichero, numlineas);
-		copiaContenido("C:\\Users\\guille\\eclipse-workspace\\EDA\\src\\"+fichero, numlineas,tiempo_inicio);		
+		numlineas=muestraContenido(fichero, numlineas);
+		copiaContenido(fichero, numlineas);		
 	}
 }
