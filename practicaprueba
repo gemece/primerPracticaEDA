@@ -8,25 +8,25 @@ import java.io.IOException;
 import java.util.Scanner;
 
 public class practicaprueba1 {
-	public static int muestraContenido(String fichero, int numlineas) throws FileNotFoundException, IOException{
+	public static int muestraContenido(String fichero, int numlineas) throws FileNotFoundException, IOException{ //Esta función se encarga de mostrar el contenido del interior del fichero
 		String cadena;
 		FileReader f =new FileReader(fichero);
 		BufferedReader b = new BufferedReader(f);
 		while((cadena=b.readLine())!=null) {
 			System.out.println(cadena);
-			numlineas ++;
+			numlineas ++; //El contador numlineas se utiliza para saber la cantidad de lineas de la matriz. Su valor se incrementa en 1 por cada vez que se muestra una linea por pantalla.
 		}
 		b.close();
 		return numlineas;
 	}
 	public static void copiaContenido(String fichero, int numlineas)throws FileNotFoundException, IOException{
-		System.out.println();//separar una matriz de otra
+		System.out.println();//Para separar una matriz de la otra
 		String cadena;
-		int n; //filas
-		int m; //columnas
-		int letra=0;//para ir mostrando cada caracter
-		int linea=0; //contador para enseñar la linea
-		String datos [] = new String[numlineas]; //creo un vector de tamaño de las líneas en el que voy guardando la informacion que hay en cada linea
+		int n; //Filas
+		int m; //Columnas
+		int letra=0;//Se usa para ir mostrando cada caracter
+		int linea=0; //Contador para las lineas
+		String datos [] = new String[numlineas]; //Se crea un vector de tamaño de las líneas en el que se guarda la informacion que hay en cada linea
 		int contador=0;
 		FileReader f =new FileReader(fichero);
 		BufferedReader b = new BufferedReader(f);
@@ -36,18 +36,18 @@ public class practicaprueba1 {
 		}
 		b.close();
 		//Aqui empezamos a copiar la matriz
-		n=Integer.parseInt(datos[0]);//paso el string a un int
+		n=Integer.parseInt(datos[0]);//Se transforma cada string a int
 		m=Integer.parseInt(datos[1]);
 		char matriz [][] =new char [n][m];
 		for(int i=0; i<n;i++) {
 			for(int j=0; j<m;j++) {
-				String c=datos[linea+2];//mas dos porque las dos primeras lineas son de filas y columnas utilizo caracter porque va a ser el mismo contador
-				matriz[i][j]=c.charAt(letra);//caracter porque va a tener los mismos caracteres que columnas
+				String c=datos[linea+2];//Se le suma dos porque las dos primeras lineas son de filas y columnas y se utiliza el caracter porque va a ser el mismo contador
+				matriz[i][j]=c.charAt(letra);//Caracter porque va a tener los mismos caracteres que columnas
 				System.out.print(matriz[i][j]);
 				letra++;
 			}
-			letra=0;//vuelvo a reiniciar el contador porque sino se pasa de rango
-			linea++;//aumento el contador de linea aqui porque tiene que cargar una linea por cada columna
+			letra=0;//Se reinicia el contador para que no salga del rango
+			linea++;//Se aumenta el contador de linea aqui porque tiene que cargar una linea por cada columna
 			System.out.println("");
 		}
 		empiezaJuego(matriz,n,m);
@@ -57,7 +57,7 @@ public class practicaprueba1 {
 		BufferedWriter bw;
 		if(archivo.exists()) {
 			bw=new BufferedWriter(new FileWriter(archivo));
-			bw.write(fila + "\n");
+			bw.write(fila + "\n"); //Se escribe la matriz en el fichero mediante un bucle
 			bw.newLine();
 			bw.write(columna + "\n");
 			bw.newLine();
@@ -68,7 +68,7 @@ public class practicaprueba1 {
 				bw.newLine();
 				}
 		}else {
-			bw=new BufferedWriter(new FileWriter(archivo));
+			bw=new BufferedWriter(new FileWriter(archivo)); //Si el archivo no existe crea uno nuevo 
 			bw.write(fila + "\n");
 			bw.newLine();
 			bw.write(columna + "\n");
@@ -95,16 +95,16 @@ public class practicaprueba1 {
 		long tiempo_inicio=System.currentTimeMillis();
 		int viva=0;
 		int muerta=0;
-		//si una celula muerta rodeada por tres vivas vive
-		//si una celula viva no esta rodeada por dos o tres celulas vivas muere
+		//Si una celula muerta está rodeada por exactamente 3 células vivas pasa a estar viva
+		//Si una célula viva no esta rodeada por dos o tres células vivas muere
 		/*
-		 * vamos a crear una matriz copia para cada paso guardarlo en una nueva matriz
+		 * Vamos a crear una matriz copia para que cada paso se guarde en una nueva matriz
 		 * 
 		 */
 		while(contador!=iteracion) {
 			matriz=ampliaMatriz(matriz, x, y);
-			x=matriz.length;//conseguir el numero de filas que ha aumentado
-			y=matriz[0].length;//conseguir el numero de columnas que ha aumentado
+			x=matriz.length;//Conseguir el numero de filas que ha aumentado
+			y=matriz[0].length;//Conseguir el numero de columnas que ha aumentado
 			char [][] matrizcopia=new char[x][y];			
 			for(int i=0; i<x;i++) {
 				for(int j=0;j<y;j++) {
@@ -115,7 +115,7 @@ public class practicaprueba1 {
 				for(int j=0;j<y;j++) {
 					if((i!=0)&&(j!=0)&&(i!=(x-1))&&(j!=(y-1))) {
 						if(matriz[i][j]=='.') {
-							if(matriz[i-1][j]=='X') {
+							if(matriz[i-1][j]=='X') { //Comprobaciones condicionales de cada célula del tablero
 								viva++;
 							}
 							if(matriz[i+1][j]=='X') {
@@ -304,19 +304,19 @@ public class practicaprueba1 {
 							}							
 						}
 					}					
-					if(viva==3) {
+					if(viva==3) {				//Si hay 3 células vivas alrededor la célula pasa a estar viva (X)
 						matrizcopia[i][j]='X';						
 					}
 					else{	
-						if(muerta<2||muerta>3) {
+						if(muerta<2||muerta>3) { //Si hay 1 o más de 3 celulas vivas alrededor la celula muere (.)
 							matrizcopia[i][j]='.';
 						}
 					}										
-					viva=0;
+					viva=0;	//Se reinician los contadores
 					muerta=0;
 				}
 			}
-			for(int n=0; n<x;n++) {
+			for(int n=0; n<x;n++) {	//La matriz se copia en matrizcopia
 				for(int m=0;m<y;m++) {
 					matriz[n][m]=matrizcopia[n][m];
 				}
@@ -329,7 +329,7 @@ public class practicaprueba1 {
 		int contador=0;
 		for(int i=0;i<x;i++) {
 			for(int j=0;j<y;j++) {
-				if(matriz[i][j]=='X') {
+				if(matriz[i][j]=='X') { //Se cuentan las células vivas que hay en la matriz
 					contador++;
 				}
 			}
@@ -338,7 +338,7 @@ public class practicaprueba1 {
 	}
 	public static void matrizFinal(char [][] matriz, int x, int y, int iteracion, long tiempo_inicio,String fichero_salida) throws IOException {
 		char matrizcopia[][]=new char[x][y];
-		int reducir_fila=1;
+		int reducir_fila=1;	//Este método se usa para reducir la matriz final en caso de que haya filas o columnas formadas por células muertas, en cuyo caso se eliminan.
 		int reducir_columna=1;
 		int contador_fila=0;
 		int contador_columna=0;
@@ -427,13 +427,13 @@ public class practicaprueba1 {
 			System.out.println("Fichero de salida: " + fichero_salida);
 		
 	}
-	public static char [][] ampliaMatriz(char [][] matriz, int x, int y) {
+	public static char [][] ampliaMatriz(char [][] matriz, int x, int y) { //Funcion encargada de ampliar la matriz en caso de que su rango se amplie
 		int aumenta=0;
 		char [][] nuevamatriz=new char[x][y];
 		for(int i=0;i<x;i++) {
 			for(int j=0;j<y;j++) {
 				if(i==0) {
-					if(matriz[i][j]=='X') {
+					if(matriz[i][j]=='X') { //Se dan las condiciones en las que hay que aumentar la matriz (aumenta=1)
 						aumenta=1;
 					}
 				}
@@ -454,15 +454,15 @@ public class practicaprueba1 {
 				}
 			}
 		}
-		if(aumenta==1) {
+		if(aumenta==1) { //Si el valor de la variable aumenta es 1, la matriz se amplia 
 			char [][] nuevamatriz1=new char[x+2][y+2];
-			//primero creo una matriz llena de puntos
+			//Primero se crea una matriz llena de puntos
 			for(int i=0;i<(x+2);i++) {
 				for(int j=0;j<(y+2);j++) {
 					nuevamatriz1[i][j]='.';
 				}
 			}
-			//ahora voy a guardar en medio de la matriz la otra y que esta quede rodeada de puntos
+			//Ahora se guarda la matriz en medio de la otra y que ésta quede rodeada de puntos
 			for(int i=0;i<x;i++) {
 				for(int j=0;j<y;j++) {
 					nuevamatriz1[i+1][j+1]=matriz[i][j];
